@@ -1,5 +1,6 @@
 package com.plcoding.contactscomposemultiplatform.contacts.presentation
 
+import AddContactSheet
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.plcoding.contactscomposemultiplatform.common.presentation.ImagePicker
 import com.plcoding.contactscomposemultiplatform.contacts.domain.Contact
 import com.plcoding.contactscomposemultiplatform.contacts.presentation.components.ContactListItem
 
@@ -28,8 +30,12 @@ import com.plcoding.contactscomposemultiplatform.contacts.presentation.component
 fun ContactListScreen(
     state: ContactListState,
     newContact: Contact?,
-    onEvent: (ContactListEvent) -> Unit
+    onEvent: (ContactListEvent) -> Unit,
+    imagePicker: ImagePicker
 ) {
+    imagePicker.registerPicker { imageBytes ->
+        onEvent(ContactListEvent.OnPhotoPicked(imageBytes))
+    }
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -57,7 +63,7 @@ fun ContactListScreen(
                     fontWeight = FontWeight.Bold
                 )
             }
-            items(state.contacts) {contact ->
+            items(state.contacts) { contact ->
                 ContactListItem(
                     contact = contact,
                     modifier = Modifier
@@ -70,4 +76,16 @@ fun ContactListScreen(
             }
         }
     }
+
+    AddContactSheet(
+        state = state,
+        newContact = newContact,
+        isOpen = state.isAddContactSheetOpen,
+        onEvent = { event ->
+            if (event is ContactListEvent.OnAddPhotoClicked) {
+                imagePicker.pickImage()
+            }
+            onEvent(event)
+        }
+    )
 }

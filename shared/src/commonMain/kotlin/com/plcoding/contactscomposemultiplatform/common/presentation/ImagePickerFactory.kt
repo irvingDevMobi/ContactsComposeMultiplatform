@@ -1,0 +1,8 @@
+package com.plcoding.contactscomposemultiplatform.common.presentation
+
+import androidx.compose.runtime.Composable
+
+expect class ImagePickerFactory {
+    @Composable
+    fun createPicker(): ImagePicker
+}
